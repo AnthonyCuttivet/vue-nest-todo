@@ -9,3 +9,13 @@ export class CreateTodoDTO
     @IsBoolean()
     checked: boolean;
 }
+
+export class UpdateTodoDTO
+{
+    @IsString()
+    @IsNotEmpty()
+    content: string;
+
+    @IsBoolean()
+    checked: boolean;
+}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { Todo } from '../types';
+import type { Todo, UpdateTodoDto } from '../types';
 import { useTodoStore } from '../stores/todoStore';
 
 const props = defineProps<{ todo: Todo }>();
@@ -10,9 +10,8 @@ const isEditing = ref(false);
 const editContent = ref(props.todo.content);
 
 async function toggleCheck() {
-  await todoStore.updateTodo(props.todo.id, {
-    checked: !props.todo.checked,
-  });
+  const dto:UpdateTodoDto = {content:props.todo.content, checked:!props.todo.checked};
+  await todoStore.updateTodo(props.todo.id, dto);
 }
 
 function startEdit() {
@@ -22,9 +21,8 @@ function startEdit() {
 
 async function saveEdit() {
   if (editContent.value.trim()) {
-    await todoStore.updateTodo(props.todo.id, {
-      content: editContent.value,
-    });
+    const dto:UpdateTodoDto = {content:editContent.value, checked:props.todo.checked};
+    await todoStore.updateTodo(props.todo.id, dto);
     isEditing.value = false;
   }
 }

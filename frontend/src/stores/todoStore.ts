@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { todoService } from '../services/todoService';
 import type { Todo, CreateTodoDto, UpdateTodoDto } from '../types';
 
@@ -7,6 +7,15 @@ export const useTodoStore = defineStore('todo', () => {
   const todos = ref<Todo[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
+
+  const sortedTodos = computed(() => {
+    return [...todos.value].sort((a, b) => {
+      if (a.checked !== b.checked) {
+        return a.checked ? 1 : -1;
+      }
+      return a.id - b.id;
+    });
+  });
 
   async function fetchTodos() {
     loading.value = true;
@@ -39,5 +48,14 @@ export const useTodoStore = defineStore('todo', () => {
     todos.value = todos.value.filter(t => t.id !== id);
   }
 
-  return { todos, loading, error, fetchTodos, addTodo, updateTodo, deleteTodo };
+  return {
+    todos,
+    sortedTodos,
+    loading,
+    error,
+    fetchTodos,
+    addTodo,
+    updateTodo,
+    deleteTodo
+  };
 });

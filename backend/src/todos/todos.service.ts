@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { CreateTodoDTO } from "./dto/create-todo.dto";
+import { CreateTodoDTO, UpdateTodoDTO } from "./dto/create-todo.dto";
 import { Todo } from "src/database/entities/todo.entity";
 import { TodoRepository } from "src/database/repositories/todo.repository";
 
@@ -7,14 +7,19 @@ import { TodoRepository } from "src/database/repositories/todo.repository";
 export class TodosService {
     constructor(private readonly todoRepository:TodoRepository) {}
 
-    getTodos() : Promise<Todo[]>
+    async getTodos() : Promise<Todo[]>
     {
         return this.todoRepository.fetchAllTodos();
     }
 
-    createTodo(dto: CreateTodoDTO): Promise<Todo>
+    async createTodo(dto: CreateTodoDTO): Promise<Todo>
     {
         return this.todoRepository.createTodo({ content: dto.content, checked: dto.checked });
+    }
+
+    async updateTodo(id:number, dto:UpdateTodoDTO) : Promise<Todo>
+    {
+        return this.todoRepository.updateTodo(id, dto);
     }
 
     async deleteTodo(id: number): Promise<void>
