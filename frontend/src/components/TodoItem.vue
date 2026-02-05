@@ -34,12 +34,25 @@ async function deleteTodo() {
       class="checkbox"
     />
 
-    <div v-if="!isEditing" class="todo-content" @dblclick="startEdit">
-      <span class="title">{{ todo.title }}</span>
-      <span class="content">{{ todo.content }}</span>
-      <span class="priority">{{ todo.priority }}</span>
-      <span class="executionDate" v-if="todo.executionDate">{{ new Date(todo.executionDate).toLocaleDateString() }}</span>
-      <span class="date">{{ new Date(todo.createdAt).toLocaleDateString() }}</span>
+    <div class="todo-content">
+      <div class="todo-header">
+        <h3 class="title">{{ todo.title }}</h3>
+        <span class="priority-badge" :class="`priority-${todo.priority}`">
+          {{ todo.priority === 'low' ? '🟢' : todo.priority === 'medium' ? '🟡' : '🔴' }}
+          {{ todo.priority === 'low' ? 'Basse' : todo.priority === 'medium' ? 'Moyenne' : 'Haute' }}
+        </span>
+      </div>
+
+      <p class="content">{{ todo.content }}</p>
+
+      <div class="todo-footer">
+        <span class="date-info">
+          📅 Créé le {{ new Date(todo.createdAt).toLocaleDateString() }}
+        </span>
+        <span class="executionDate" v-if="todo.executionDate">
+          ⏰ À faire le {{ new Date(todo.executionDate).toLocaleDateString() }}
+        </span>
+      </div>
     </div>
 
     <div class="actions">
@@ -53,7 +66,7 @@ async function deleteTodo() {
 .todo-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   padding: 12px;
   background: #282828;
   border: 1px solid #bd94f0;
@@ -88,26 +101,68 @@ async function deleteTodo() {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
+  padding: 4px 0;
   cursor: pointer;
   color: #d4b7f5;
 }
 
+.todo-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
 .content {
-  font-size: 16px;
+  font-size: 14px;
+  color: #b0b0b0;
+  margin: 0;
+  line-height: 1.5;
 }
 
-.date {
+.priority-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
   font-size: 12px;
-  color: #717171;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-.edit-input {
-  flex: 1;
-  padding: 8px;
-  border: 2px solid #b84242;
-  border-radius: 4px;
-  font-size: 16px;
+.priority-low {
+  background: rgba(72, 187, 120, 0.2);
+  color: #68d391;
+}
+
+.priority-medium {
+  background: rgba(237, 137, 54, 0.2);
+  color: #ed8936;
+}
+
+.priority-high {
+  background: rgba(245, 101, 101, 0.2);
+  color: #fc8181;
+}
+
+.todo-footer {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #718096;
+  margin-top: 4px;
+}
+
+.date-info,
+.executionDate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .actions {

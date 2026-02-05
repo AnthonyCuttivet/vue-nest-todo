@@ -18,6 +18,9 @@ const newTodoContent = ref('');
 const newTodoPriority = ref<TodoPriority>('low');
 const newTodoExecutionDate = ref<Date | null>(null);
 
+const TODO_TITLE_MAX_LENGTH:number = 49;
+const TODO_CONTENT_MAX_LENGTH:number = 255;
+
 onMounted(() => {
   todoStore.fetchTodos();
 });
@@ -32,10 +35,15 @@ watch(() => todoStore.editingTodo, (todo) => {
   }
 }, { immediate: true });
 
+const isFormValid = computed(() => {
+  return newTodoTitle.value.trim().length > 0 &&
+         newTodoTitle.value.length <= TODO_TITLE_MAX_LENGTH &&
+         newTodoContent.value.trim().length > 0 &&
+         newTodoContent.value.length <= TODO_CONTENT_MAX_LENGTH;
+});
+
 async function addTodo() {
   if(!validateTodo(newTodoTitle.value, newTodoContent.value)) return;
-
-  console.log(newTodoExecutionDate.value);
 
   if(newTodoExecutionDate.value === '')
   {
@@ -85,41 +93,81 @@ function cancelAdd() {
       <button @click="authStore.logout" class="btn-logout">Déconnexion</button>
     </div>
 
-    <form @submit.prevent="addTodo" class="add-todo">
-      <input
-        v-model="newTodoTitle"
-        @focus="isFormExpanded = true"
-        placeholder="Nouveau #TODO - Titre"
-        class="input"
-      />
-      <p v-if="errors.title" class="error-message">{{ errors.title }}</p>
+    <form @submit.prevent="addTodo" class="add-todo" :class="{ 'editing-mode': isEditing }">
+      <div class="field-group">
+        <label class="field-label">Titre</label>
+        <div class="input-wrapper">
+          <input
+            v-model="newTodoTitle"
+            @focus="isFormExpanded = true"
+            placeholder="#TODO - Titre"
+            class="input"
+            :class="{ 'input-error': errors.title }"
+            :maxlength="TODO_TITLE_MAX_LENGTH"
+          />
+          <span class="char-counter" :class="{ warning: newTodoTitle.length > TODO_TITLE_MAX_LENGTH * 0.8 }">
+            {{ newTodoTitle.length }}/{{ TODO_TITLE_MAX_LENGTH }}
+          </span>
+        </div>
+        <p v-if="errors.title" class="error-message">{{ errors.title }}</p>
+      </div>
 
       <Transition name="slide">
         <div v-if="isFormExpanded" class="expanded-fields">
-          <textarea
-            v-model="newTodoContent"
-            placeholder="Nouveau #TODO - Contenu"
-            class="input textarea"
-            rows="3"
-          />
+          <div class="field-group">
+            <label class="field-label">Contenu</label>
+            <div class="input-wrapper">
+              <textarea
+                v-model="newTodoContent"
+                placeholder="#TODO - Description"
+                class="input textarea"
+                :class="{ 'input-error': errors.content }"
+                rows="4"
+                :maxlength="TODO_CONTENT_MAX_LENGTH"
+              />
+              <span class="char-counter textarea-counter" :class="{ warning: newTodoContent.length > TODO_CONTENT_MAX_LENGTH * 0.9 }">
+                {{ newTodoContent.length }}/{{ TODO_CONTENT_MAX_LENGTH }}
+              </span>
+            </div>
+            <p v-if="errors.content" class="error-message">{{ errors.content }}</p>
+          </div>
 
           <div class="form-row">
-            <select v-model="newTodoPriority" class="input select">
-              <option value="low">Basse</option>
-              <option value="medium">Moyenne</option>
-              <option value="high">Haute</option>
-            </select>
+            <div class="field-group">
+              <label class="field-label">Priorité</label>
+              <select v-model="newTodoPriority" class="input select">
+                <option value="low">🟢 Basse</option>
+                <option value="medium">🟡 Moyenne</option>
+                <option value="high">🔴 Haute</option>
+              </select>
+            </div>
 
-            <input
-              v-model="newTodoExecutionDate"
-              type="date"
-              class="input"
-            />
+            <div class="field-group">
+              <label class="field-label optional-label">
+                Date d'exécution <span class="optional-tag">(optionnel)</span>
+              </label>
+              <input
+                v-model="newTodoExecutionDate"
+                type="date"
+                class="input optional-input"
+              />
+            </div>
           </div>
 
           <div class="form-actions">
-            <button type="submit" :class="isEditing ? 'btn-modify' : 'btn-add'">{{ isEditing ? 'Modifier' : 'Ajouter' }}</button>
-            <button type="button" @click="cancelAdd" class="btn-cancel">Annuler</button>
+            <p v-if="errors.title || errors.content" class="error-inline">
+              {{ errors.title || errors.content }}
+            </p>
+            <div class="buttons-group">
+              <button
+                type="submit"
+                :class="isEditing ? 'btn-modify' : 'btn-add'"
+                :disabled="!isFormValid"
+              >
+                {{ isEditing ? 'Modifier' : 'Ajouter' }}
+              </button>
+              <button type="button" @click="cancelAdd" class="btn-cancel">Annuler</button>
+            </div>
           </div>
         </div>
       </Transition>
@@ -167,6 +215,85 @@ function cancelAdd() {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  color: #b183ed;
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.optional-label {
+  color: #888;
+}
+
+.optional-tag {
+  font-size: 12px;
+  font-weight: normal;
+  font-style: italic;
+  color: #666;
+}
+
+.optional-input {
+  border-style: dashed !important;
+  opacity: 0.8;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.char-counter {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  font-size: 11px;
+  color: #888;
+  background: rgba(42, 42, 42, 0.8);
+  padding: 2px 6px;
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+.char-counter.warning {
+  color: #ffa500;
+  font-weight: bold;
+}
+
+.textarea-counter {
+  bottom: 8px;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.buttons-group {
+  display: flex;
+  gap: 10px;
+}
+
+.error-inline {
+  color: #f56565;
+  font-size: 14px;
+  margin: 0;
+  flex: 1;
+}
+
+.btn-add:disabled,
+.btn-modify:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .add-todo {
@@ -271,6 +398,7 @@ function cancelAdd() {
   background-color: #3f3f3f;
   border: 1px solid #b183ed;
   color: #ffffff;
+  min-width: 100%;
 }
 
 .todo-list {
