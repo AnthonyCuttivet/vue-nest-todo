@@ -22,7 +22,8 @@
     "mikro:create": "mikro-orm migration:create",
     "mikro:up": "mikro-orm migration:up",
     "mikro:down": "mikro-orm migration:down",
-    "seed": "ts-node src/seed.ts"
+    "seed": "ts-node src/seed.ts",
+    "setup": "npm run mikro:create && npm run mikro:up && npm run seed"
   },
   "dependencies": {
     "@mikro-orm/core": "^6.6.5",
