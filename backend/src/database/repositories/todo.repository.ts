@@ -2,18 +2,20 @@ import { EntityManager, RequiredEntityData } from "@mikro-orm/postgresql";
 import { Todo } from "../../database/entities/todo.entity";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateTodoDTO, UpdateTodoDTO } from "src/todos/dto/todo.dto";
+import { User } from "../entities/user.entity";
 
 @Injectable()
 export class TodoRepository {
   constructor(private readonly em: EntityManager) {}
 
-  async fetchAllTodos(): Promise<Todo[]> {
-    return this.em.find(Todo, {});
+  async fetchAllTodos(user:User): Promise<Todo[]> {
+    return this.em.find(Todo, {author: user});
   }
 
-  async createTodo(dto:CreateTodoDTO): Promise<Todo> {
+  async createTodo(dto:CreateTodoDTO, user:User): Promise<Todo> {
     const todo = this.em.create(Todo, {
         title: dto.title,
+        author: user,
         content: dto.content,
         priority: dto.priority,
         executionDate: dto.executionDate,
@@ -24,8 +26,8 @@ export class TodoRepository {
     return this.em.flush().then(() => todo);
   }
 
-  async updateTodo(id: number, dto: UpdateTodoDTO): Promise<Todo> {
-    const todo = await this.em.findOne(Todo, { id });
+  async updateTodo(id: number, dto: UpdateTodoDTO, user:User): Promise<Todo> {
+    const todo = await this.em.findOne(Todo, { id, author:user });
 
     if (!todo) {
       throw new NotFoundException(`Todo ${id} not found`);
@@ -55,8 +57,8 @@ export class TodoRepository {
     return todo;
   }
 
-  async deleteTodo(id: number): Promise<void> {
-    const todo = await this.em.findOneOrFail(Todo, { id });
+  async deleteTodo(id: number, user:User): Promise<void> {
+    const todo = await this.em.findOneOrFail(Todo, { id, author:user });
 
     if(!todo){
       throw new NotFoundException('Todo ${id} not found');

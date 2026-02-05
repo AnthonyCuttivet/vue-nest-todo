@@ -1,25 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { checkPassword } from './utils/password.utils';
+import { User } from 'src/database/entities/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(private usersService: UsersService, private jwtService: JwtService) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
-    console.log(username, pass);
     const user = await this.usersService.findByUsername(username);
-    console.log(user);
 
-    if(!user)
-    {
-      return null;
+    if (!user) {
+      throw new UnauthorizedException('User not found');
     }
 
     const isValid = await checkPassword(pass, user.password);
-
-    console.log(isValid);
 
     if(!isValid)
     {
@@ -30,9 +26,11 @@ export class AuthService {
     return result;
   }
 
-  async login(user: any)
+  async login(user: User)
   {
-    const payload = {username: user.username, sub: user.userId};
-    return{ access_token: this.jwtService.sign(payload)};
+    const payload = {username: user.username, sub: user.id};
+    const token = this.jwtService.sign(payload);
+
+    return { access_token: token };
   }
 }

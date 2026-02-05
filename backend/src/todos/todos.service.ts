@@ -2,17 +2,18 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { CreateTodoDTO, UpdateTodoDTO } from "./dto/todo.dto";
 import { Todo } from "src/database/entities/todo.entity";
 import { TodoRepository } from "src/database/repositories/todo.repository";
+import { User } from "src/database/entities/user.entity";
 
 @Injectable()
 export class TodosService {
     constructor(private readonly todoRepository:TodoRepository) {}
 
-    async getTodos() : Promise<Todo[]>
+    async getTodos(user:User) : Promise<Todo[]>
     {
-        return this.todoRepository.fetchAllTodos();
+        return this.todoRepository.fetchAllTodos(user);
     }
 
-    async createTodo(dto: CreateTodoDTO): Promise<Todo>
+    async createTodo(dto: CreateTodoDTO, user:User): Promise<Todo>
     {
         try
         {
@@ -21,8 +22,8 @@ export class TodosService {
                 content: dto.content,
                 priority: dto.priority,
                 executionDate: dto.executionDate,
-                checked: dto.checked
-            });
+                checked: dto.checked,
+            }, user);
 
             return todo;
         }
@@ -39,13 +40,13 @@ export class TodosService {
         }
     }
 
-    async updateTodo(id:number, dto:UpdateTodoDTO) : Promise<Todo>
+    async updateTodo(id:number, dto:UpdateTodoDTO, user:User) : Promise<Todo>
     {
-        return this.todoRepository.updateTodo(id, dto);
+        return this.todoRepository.updateTodo(id, dto, user);
     }
 
-    async deleteTodo(id: number): Promise<void>
+    async deleteTodo(id: number, user:User): Promise<void>
     {
-        await this.todoRepository.deleteTodo(id);
+        await this.todoRepository.deleteTodo(id, user);
     }
 }

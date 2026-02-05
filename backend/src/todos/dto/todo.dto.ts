@@ -1,12 +1,8 @@
 import { Transform } from "class-transformer";
 import { IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsOptional, isString, IsString, MaxLength } from "class-validator";
+import { TodoPriority } from '../../types';
 
-export enum TodoPriority
-{
-    LOW = 'low',
-    MEDIUM = 'medium',
-    HIGH = 'high'
-}
+
 
 const TODO_TITLE_MAX_LENGTH:number = 50;
 const TODO_CONTENT_MAX_LENGTH:number = 256;
