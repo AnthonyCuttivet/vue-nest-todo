@@ -154,13 +154,20 @@ function cancelAdd() {
               {{ errors.title || errors.content }}
             </p>
             <div class="buttons-group">
-              <button
-                type="submit"
-                :class="isEditing ? 'btn-modify' : 'btn-add'"
-                :disabled="!isFormValid"
-              >
-                {{ isEditing ? 'Modifier' : 'Ajouter' }}
-              </button>
+              <div class="button-wrapper">
+                <button
+                  type="submit"
+                  :class="isEditing ? 'btn-modify' : 'btn-add'"
+                  :disabled="!isFormValid"
+                >
+                  {{ isEditing ? 'Modifier' : 'Ajouter' }}
+                </button>
+
+                <div v-if="!isFormValid" class="validation-tooltip">
+                  <span v-if="!newTodoTitle.valueOf().trim()">Le titre est requis</span>
+                  <span v-else-if="!newTodoContent.valueOf().trim()">Le contenu est requis</span>
+                </div>
+              </div>
               <button type="button" @click="cancelAdd" class="btn-cancel">Annuler</button>
             </div>
           </div>
@@ -263,7 +270,7 @@ function cancelAdd() {
 }
 
 .textarea-counter {
-  bottom: 8px;
+  bottom: 12px;
 }
 
 .form-actions {
@@ -365,6 +372,50 @@ function cancelAdd() {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.button-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.validation-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: #2a2a2a;
+  border: 2px solid #f56565;
+  color: #fc8181;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 10;
+}
+
+.validation-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #f56565;
+}
+
+.button-wrapper:hover .validation-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-12px);
+}
+
+.btn-add:disabled,
+.btn-modify:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .slide-enter-active,
