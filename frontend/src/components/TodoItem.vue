@@ -125,6 +125,8 @@ async function deleteTodo() {
   color: #b0b0b0;
   margin: 0;
   line-height: 1.5;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 .priority-badge {
