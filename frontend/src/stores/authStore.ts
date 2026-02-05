@@ -5,7 +5,31 @@ import type { LoginCredentials } from '../types';
 import { toast } from 'vue3-toastify';
 
 export const useAuthStore = defineStore('auth', () => {
-  const isAuthenticated = ref(authService.isAuthenticated());
+  const isAuthenticated = ref(false);
+  const isChecking = ref(true);
+
+  async function checkAuth() {
+    const token = authService.getToken();
+    if (!token)
+    {
+      isAuthenticated.value = false;
+      isChecking.value = false;
+      return;
+    }
+    try
+    {
+      isAuthenticated.value = true;
+    }
+    catch
+    {
+      authService.logout();
+      isAuthenticated.value = false;
+    }
+    finally
+    {
+      isChecking.value = false;
+    }
+  }
 
   async function login(credentials: LoginCredentials) {
     try
@@ -26,5 +50,5 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated.value = false;
   }
 
-  return { isAuthenticated, login, logout };
+  return { isAuthenticated, isChecking, checkAuth, login, logout };
 });

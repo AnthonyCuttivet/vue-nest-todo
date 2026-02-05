@@ -23,7 +23,16 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !isLoginRoute) {
       localStorage.removeItem('access_token');
       window.location.href = '/';
+      return Promise.reject(error);
     }
+
+    if (!error.response || error.response?.status >= 500) {
+      if (!isLoginRoute && localStorage.getItem('access_token')) {
+        localStorage.removeItem('access_token');
+        window.location.href = '/';
+      }
+    }
+
     return Promise.reject(error);
   }
 );
