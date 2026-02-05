@@ -17,7 +17,7 @@ export class TodosService {
     {
         try
         {
-            const todo = await this.todoRepository.createTodo({
+            const todo = this.todoRepository.createTodo({
                 title: dto.title,
                 content: dto.content,
                 priority: dto.priority,
@@ -35,35 +35,18 @@ export class TodosService {
             }
 
             console.error(err);
+
             throw new InternalServerErrorException('Could not create todo');
         }
     }
 
     async updateTodo(id:number, dto:UpdateTodoDTO, user:User) : Promise<Todo>
     {
-        try
-        {
-            const todo = await this.todoRepository.updateTodo(id, dto, user);
-            return todo;
-        }
-        catch(err)
-        {
-            console.error(err);
-            throw new InternalServerErrorException('Could not update todo');
-        }
-
+        return this.todoRepository.updateTodo(id, dto, user);
     }
 
     async deleteTodo(id: number, user:User): Promise<void>
     {
-        try
-        {
-            await this.todoRepository.deleteTodo(id, user);
-        }
-        catch(err)
-        {
-            console.error(err);
-            throw new InternalServerErrorException('Could not delete todo');
-        }
+        await this.todoRepository.deleteTodo(id, user);
     }
 }
