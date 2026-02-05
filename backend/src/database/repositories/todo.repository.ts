@@ -45,7 +45,7 @@ export class TodoRepository {
       todo.priority = dto.priority;
     }
 
-    if (dto.executionDate !== undefined) {
+    if (todo.executionDate !== dto.executionDate) {
       todo.executionDate = dto.executionDate;
     }
 
