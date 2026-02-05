@@ -13,30 +13,30 @@ async function handleLogin() {
   try {
     await authStore.login({ username: username.value, password: password.value });
   } catch (e) {
-    error.value = 'Wrong credientials';
+    error.value = 'Identifiants invalides';
   }
 }
 </script>
 
 <template>
   <div class="login-container">
-    <h2 class="text">Account</h2>
+    <h2 class="text">Connexion</h2>
     <br/>
     <form @submit.prevent="handleLogin" class="login-form">
       <input
         v-model="username"
-        placeholder="Username"
+        placeholder="Identifiant"
         required
         class="input"
       />
       <input
         v-model="password"
         type="password"
-        placeholder="Password"
+        placeholder="Mot de passe"
         required
         class="input"
       />
-      <button type="submit" class="btn-primary">Login</button>
+      <button type="submit" class="btn-primary">S'identifier</button>
       <p v-if="error" class="error">{{ error }}</p>
     </form>
   </div>
