@@ -181,7 +181,7 @@ function cancelAdd() {
     </div>
 
     <div v-else-if="todoStore.sortedTodos.length === 0" class="empty">
-      No #TODO right now
+      Aucun #TODO pour le moment
     </div>
 
     <div v-else class="todo-list">
