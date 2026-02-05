@@ -17,6 +17,7 @@ export interface LoginCredentials {
 
 export interface LoginResponse {
   access_token: string;
+  username:string;
 }
 
 export interface CreateTodoDto {

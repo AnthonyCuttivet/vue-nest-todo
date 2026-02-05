@@ -5,6 +5,7 @@ import { useAuthStore } from '../stores/authStore';
 import TodoItem from './TodoItem.vue';
 import { TODO_CONTENT_MAX_LENGTH, TODO_TITLE_MAX_LENGTH, useTodoValidation } from '../composables/useTodoValidation';
 import type { TodoPriority } from '../types';
+import UserAvatar from './UserAvatar.vue';
 
 const todoStore = useTodoStore();
 const authStore = useAuthStore();
@@ -17,8 +18,6 @@ const newTodoTitle = ref('');
 const newTodoContent = ref('');
 const newTodoPriority = ref<TodoPriority>('low');
 const newTodoExecutionDate = ref<string>('');
-
-
 
 onMounted(() => {
   todoStore.fetchTodos();
@@ -84,7 +83,10 @@ function cancelAdd() {
   <div class="todo-container">
     <div class="header">
       <h1>Mes #TODOs</h1>
-      <button @click="authStore.logout" class="btn-logout">Déconnexion</button>
+      <div class="header-actions">
+        <UserAvatar :username="authStore.loggedUsername || 'User'" />
+        <button @click="authStore.logout" class="btn-logout">Déconnexion</button>
+      </div>
     </div>
 
     <form @submit.prevent="addTodo" class="add-todo">
@@ -207,6 +209,12 @@ function cancelAdd() {
   align-items: center;
   margin-bottom: 30px;
   color: #ffffff;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .btn-logout {

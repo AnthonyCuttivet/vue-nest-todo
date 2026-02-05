@@ -5,6 +5,7 @@ import type { LoginCredentials } from '../types';
 import { toast } from 'vue3-toastify';
 
 export const useAuthStore = defineStore('auth', () => {
+  const loggedUsername = ref<string | null>(null);
   const isAuthenticated = ref(false);
   const isChecking = ref(true);
 
@@ -35,6 +36,8 @@ export const useAuthStore = defineStore('auth', () => {
     try
     {
       const response = await authService.login(credentials);
+      console.log(response);
+      loggedUsername.value = response.username;
       isAuthenticated.value = true;
       toast.success('Connecté');
     }
@@ -47,8 +50,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   function logout() {
     authService.logout();
+    loggedUsername.value = null;
     isAuthenticated.value = false;
   }
 
-  return { isAuthenticated, isChecking, checkAuth, login, logout };
+  return { loggedUsername, isAuthenticated, isChecking, checkAuth, login, logout };
 });
