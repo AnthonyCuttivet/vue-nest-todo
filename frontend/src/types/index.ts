@@ -5,7 +5,7 @@ export interface Todo {
     title: string;
     content: string;
     priority: TodoPriority;
-    executionDate:Date | null;
+    executionDate:string | null;
     checked: boolean;
     createdAt: Date;
   }
@@ -23,7 +23,7 @@ export interface CreateTodoDto {
   title: string;
   content: string;
   priority: string;
-  executionDate?:Date | null;
+  executionDate?:string | null;
   checked: boolean;
 }
 
@@ -31,6 +31,6 @@ export interface UpdateTodoDto {
   title: string;
   content: string;
   priority: TodoPriority;
-  executionDate?:Date | null;
+  executionDate?:string | null;
   checked?: boolean;
 }

@@ -16,7 +16,7 @@ const isEditing = computed(() => todoStore.editingTodo !== null);
 const newTodoTitle = ref('');
 const newTodoContent = ref('');
 const newTodoPriority = ref<TodoPriority>('low');
-const newTodoExecutionDate = ref<Date | null>(null);
+const newTodoExecutionDate = ref<string>('');
 
 const TODO_TITLE_MAX_LENGTH:number = 49;
 const TODO_CONTENT_MAX_LENGTH:number = 255;
@@ -30,7 +30,7 @@ watch(() => todoStore.editingTodo, (todo) => {
     newTodoTitle.value = todo.title;
     newTodoContent.value = todo.content;
     newTodoPriority.value = todo.priority;
-    newTodoExecutionDate.value = todo.executionDate;
+    newTodoExecutionDate.value = todo.executionDate ? todo.executionDate : '',
     isFormExpanded.value = true;
   }
 }, { immediate: true });
@@ -45,11 +45,6 @@ const isFormValid = computed(() => {
 async function addTodo() {
   if(!validateTodo(newTodoTitle.value, newTodoContent.value)) return;
 
-  if(newTodoExecutionDate.value === '')
-  {
-    newTodoExecutionDate.value = null;
-  }
-
   if(isEditing.value) // edit
   {
     await todoStore.updateTodo(todoStore.editingTodo!.id, {
@@ -59,8 +54,6 @@ async function addTodo() {
       executionDate: newTodoExecutionDate.value,
       checked:todoStore.editingTodo!.checked
     });
-
-    cancelAdd();
   }
   else // add
   {
@@ -72,6 +65,8 @@ async function addTodo() {
       checked: false,
     });
   }
+
+  cancelAdd();
 }
 
 function cancelAdd() {
@@ -79,7 +74,7 @@ function cancelAdd() {
   newTodoTitle.value = '';
   newTodoContent.value = '';
   newTodoPriority.value = 'low';
-  newTodoExecutionDate.value = null;
+  newTodoExecutionDate.value = '';
   errors.value = {};
   todoStore.setEditingTodo(null);
 }
@@ -93,7 +88,7 @@ function cancelAdd() {
       <button @click="authStore.logout" class="btn-logout">Déconnexion</button>
     </div>
 
-    <form @submit.prevent="addTodo" class="add-todo" :class="{ 'editing-mode': isEditing }">
+    <form @submit.prevent="addTodo" class="add-todo">
       <div class="field-group">
         <label class="field-label">Titre</label>
         <div class="input-wrapper">
@@ -308,6 +303,11 @@ function cancelAdd() {
 }
 
 .add-todo.editing-mode {
+  border: 2px solid #d6850a;
+  box-shadow: 0 0 10px rgba(66, 184, 131, 0.3);
+}
+
+.add-todo.adding-mode {
   border: 2px solid #42b883;
   box-shadow: 0 0 10px rgba(66, 184, 131, 0.3);
 }
