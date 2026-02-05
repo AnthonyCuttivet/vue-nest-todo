@@ -36,7 +36,6 @@ export const useAuthStore = defineStore('auth', () => {
     try
     {
       const response = await authService.login(credentials);
-      console.log(response);
       loggedUsername.value = response.username;
       isAuthenticated.value = true;
       toast.success('Connecté');
